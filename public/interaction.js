@@ -1,14 +1,14 @@
 var keyData = {
 			q: {
 				sound: new Howl({
-		  		src: ['/sounds/bubbles.mp3']
+		  		src: ['sounds/bubbles.mp3']
 				}),
 				color: 'blue',
 				animation: bubbles
 			},
 			w: {
 				sound: new Howl({
-		  		src: ['/sounds/clay.mp3']
+		  		src: ['sounds/clay.mp3']
 				}),
 				color: 'green'
 			},
@@ -16,7 +16,7 @@ var keyData = {
 				sound: new Howl({
 		  		src: ['sounds/confetti.mp3']
 				}),
-				color: '#f442b0',
+				color: '#ffffff',
 				animation: flashBack
 			},
 			r: {
@@ -64,8 +64,8 @@ var keyData = {
 				sound: new Howl({
 		  		src: ['sounds/moon.mp3']
 				}),
-				color: '#2c3e50',
-				animation: flashBack
+				color: '#f48600',
+				animation: flashSide
 			},
 			a: {
 				sound: new Howl({
@@ -77,14 +77,15 @@ var keyData = {
 				sound: new Howl({
 		  		src: ['sounds/piston-1.mp3']
 				}),
-				color: '#e67e22',
+				color: 'blue',
 				animation: growSquare
 			},
 			d: {
 				sound: new Howl({
 		  		src: ['sounds/piston-2.mp3']
 				}),
-				color: '#e74c3c'
+				color: '#e74c3c',
+				animation: squareBubbles
 			},
 			f: {
 				sound: new Howl({
@@ -109,7 +110,8 @@ var keyData = {
 				sound: new Howl({
 		  		src: ['sounds/splits.mp3']
 				}),
-				color: '#1abc9c'
+				color: '#1abc9c',
+				animation: squareSpinBubbles
 			},
 			k: {
 				sound: new Howl({
@@ -128,8 +130,8 @@ var keyData = {
 				sound: new Howl({
 		  		src: ['sounds/suspension.mp3']
 				}),
-				color: '#9b59b6',
-				animation: flashBack
+				color: '#24dd13',
+				animation: flashSide
 			},
 			x: {
 				sound: new Howl({
@@ -161,7 +163,8 @@ var keyData = {
 				sound: new Howl({
 				src: ['sounds/zig-zag.mp3']
 				}),
-				color: '#8e44ad'
+				color: '#8e44ad',
+				animation: fallBubbles
 			},
 			m: {
 				sound: new Howl({
@@ -179,6 +182,10 @@ var keyData = {
 		var moveCircles = [];
 		var wipes = [];
 		var bubbles = [];
+		var squareBubbles = [];
+		var squareSpinBubbles = [];
+		var fallBubbles = [];
+		var flashSides = [];
 
 	 	function onKeyDown(event) {
 	 		if (keyData[event.key] && keyData[event.key].animation) {
@@ -204,6 +211,12 @@ var keyData = {
 				flashes[i].scale(1, .8);
 				if (flashes[i].area < 1) {
 					removeShape(flashes, i);
+				}
+			}
+			for (var i = 0; i < flashSides.length; i++) {
+				flashSides[i].scale(.8, 1);
+				if (flashSides[i].area < 1) {
+					removeShape(flashSides, i);
 				}
 			}
 			for (var i = 0; i < wipes.length; i++) {
@@ -237,6 +250,31 @@ var keyData = {
 				bubbles[i].scale(.9);
 				if (bubbles[i].area < 1) {
 					removeShape(bubbles, i);
+				}
+			}
+			
+			for(var i = 0; i < squareBubbles.length; i++) {
+				squareBubbles[i].scale(1.1);
+				if (squareBubbles[i].area > 14000) {
+					removeShape(squareBubbles, i);
+				}
+			}
+			
+			for(var i = 0; i < squareSpinBubbles.length; i++) {
+				squareSpinBubbles[i].rotate(5);
+				squareSpinBubbles[i].scale(.9);
+				if (squareSpinBubbles[i].area < 1) {
+					removeShape(squareSpinBubbles, i);
+				}
+			}
+			
+			for(var i = 0; i < fallBubbles.length; i++) {
+				var destination = new Point(view.center);
+				//destination.y += view.size.height / 2;
+				var vector = destination - fallBubbles[i].position;
+				fallBubbles[i].position += vector / 10;
+				if (vector.length < 5) {
+					removeShape(fallBubbles, i);
 				}
 			}
 
@@ -288,7 +326,44 @@ var keyData = {
 				newCircle.strokeWidth = 2;
 				bubbles.push(newCircle);
 			}	
-			
+		}
+		
+		function fallBubbles() {
+			for (var i = 0; i < 10; i++) {	
+				var maxPoint = new Point(view.size.width, view.size.height);
+				var randomPoint = Point.random();
+				var point = maxPoint * randomPoint;
+				var newCircle = new Path.Circle(point, 40);
+				newCircle.strokeColor = randomColor();
+				newCircle.strokeWidth = 2;
+				fallBubbles.push(newCircle);
+			}	
+		}
+		
+		function squareBubbles() {
+			for (var i = 0; i < 10; i++) {	
+				var maxPoint = new Point(view.size.width, view.size.height);
+				var randomPoint = Point.random();
+				var point = maxPoint * randomPoint;
+				var size = new Size(60, 60);
+				var newSquare = new Path.Rectangle(point, size);
+				newSquare.strokeColor = randomColor(),
+				newSquare.strokeWidth = 2;
+				squareBubbles.push(newSquare);
+			}	
+		}
+		
+		function squareSpinBubbles() {
+			for (var i = 0; i < 20; i++) {	
+				var maxPoint = new Point(view.size.width, view.size.height);
+				var randomPoint = Point.random();
+				var point = maxPoint * randomPoint;
+				var size = new Size(100, 100);
+				var newSquare = new Path.Rectangle(point, size);
+				newSquare.strokeColor = randomColor(),
+				newSquare.strokeWidth = 2;
+				squareSpinBubbles.push(newSquare);
+			}	
 		}
 
 		// whole screen rectangle shrinks vertically to center
@@ -301,6 +376,16 @@ var keyData = {
 				fillColor: this.color,
 			});
 			flashes.push(flash);
+		}
+		
+		function flashSide() {
+			var flash = new Path.Rectangle({
+				center: view.center,
+				height: myCanvas.height,
+				width: myCanvas.width,
+				fillColor: this.color,
+			});
+			flashSides.push(flash);
 		}
 
 		// full screen wipe
@@ -326,14 +411,10 @@ var keyData = {
 				radius: 500,
 				fillColor: color
 			});
-			// set circle color to corresponding key
-			// newCircle.fillColor = this.color;
 			circles.push(newCircle);
 		}
 
 		// move circle from center to random point, then shrink
-
-		var circleCount = 0;
 
 		function moveCircle() {
 			var circleStart = new Point(200, view.size.height / 2);
@@ -350,7 +431,9 @@ var keyData = {
 			var blue = Math.floor(Math.random() * 256);
 			return "rgb(" + red + ", " + green + ", " + blue + ")"
 		}
-
+		
+		// remove shape from canvas and corresponding array
+		
 		function removeShape(shape, i) {
 			shape[i].remove();
 			shape.splice(i, 1);
