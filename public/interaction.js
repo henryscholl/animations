@@ -10,8 +10,7 @@ var keyData = {
 				sound: new Howl({
 		  		src: ['/sounds/clay.mp3']
 				}),
-				color: 'green',
-				animation: shrinkCircle
+				color: 'green'
 			},
 			e: {
 				sound: new Howl({
@@ -186,7 +185,7 @@ var keyData = {
 		 		keyData[event.key].animation();
 		 		keyData[event.key].sound.play();
 			} else if (keyData[event.key]) {
-				shrinkCircle();
+				shrinkCircle(keyData[event.key].color);
 				keyData[event.key].sound.play();
 			}
 		}
@@ -318,13 +317,17 @@ var keyData = {
 
 		// shrinking circles in random places
 
-		function shrinkCircle() {
+		function shrinkCircle(color) {
 			var maxPoint = new Point(view.size.width, view.size.height);
 			var randomPoint = Point.random();
 			var point = maxPoint * randomPoint;
-			var newCircle = new Path.Circle(point, 500);
+			var newCircle = new Path.Circle({
+				center: point, 
+				radius: 500,
+				fillColor: color
+			});
 			// set circle color to corresponding key
-			newCircle.fillColor = keyData[event.key].color;
+			// newCircle.fillColor = this.color;
 			circles.push(newCircle);
 		}
 
